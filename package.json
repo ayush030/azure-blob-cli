@@ -1,0 +1,36 @@
+{
+  "name": "azure-report-utility",
+  "version": "1.0.0",
+  "main": "index.js",
+  "bin": "index.js",
+  "scripts": {
+    "build": "pkg index.js --targets node18-macos-arm64 --output build/abc"
+  },
+  "keywords": [],
+  "type": "commonjs",
+  "author": "",
+  "license": "ISC",
+  "description": "utility for interfacing with Azure Blob storage",
+  "dependencies": {
+    "@elastic/ecs-winston-format": "^1.5.3",
+    "azure-storage": "^2.10.7",
+    "commander": "^13.1.0",
+    "http-status-codes": "^2.3.0",
+    "js-yaml": "^4.1.0",
+    "pkg": "^5.8.1",
+    "winston": "^3.17.0"
+  },
+  "pkg": {
+    "scripts": [
+      "index.js",
+      "*.js",
+      "*/*.js"
+    ],
+    "assets": [
+      "config.yaml"
+    ],
+    "targets": [
+      "node18-macos-arm64"
+    ]
+  }
+}
