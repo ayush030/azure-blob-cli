@@ -1,0 +1,49 @@
+#Azure Blob storage configuration parameters
+blobConfigs:
+  #Azure blob storage URL
+  url: "https://myaccount.myonstackstorage.onstack.test"
+
+  # Storage account used for authentication and communicate with blob storage
+  account: "myaccount"
+
+  # this key will be used to authenticate and establish communication with azure blob storage
+  key: "my-storage-key"
+
+  # this defines the validity(in minutes) of token generated for authentication, for long operations this should be set to higher number
+  sasValidityDuration: 1 #minutes
+
+  # this is the number of retries that will be done in case an operation fails
+  maxRetries: 1
+
+  # the interval between successive retries(in seconds)
+  retryInterval: 3 #seconds
+
+  # this disables cert verification while establishing connection. To run locally disable it.
+  skipTLSVerification: true
+
+#[Special parameter]
+# list of files, used for bulk downloading files from storage.
+fileList: [
+  "natwest",
+  "hsbc",
+  "lloyds",
+  "barclays",
+  "clydesdale",
+  "cooperative",
+  "metro",
+  "nationwide",
+  "santander",
+  "tsb",
+  "prepay",
+  "cashplus",
+  "jpmc",
+  "lhv",
+  "societeGenrale",
+  "monzo",
+  "revolut",
+  "tide",
+  "wise",
+  "thinkMoney",
+  "starling",
+  "danske"
+]
