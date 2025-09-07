@@ -322,6 +322,163 @@ class AzureBlobStorageHandler {
 
         return Promise.resolve("reports download operation completed");
     }
+
+    /**
+     * @description lists entities of blob storage
+     * @typedef{(containerName: string, prefix: string, debug: boolean) => Promise<Object>}
+     * @param containerName - name of container at the azure blob storage
+     * @param prefix - name of prefix/folder at the azure blob storage
+     * @param debug - display debug response
+     **/
+    async listAzureEntities(containerName, prefix, debug) {
+        if (!containerName) {
+            return this.#listContainers(debug);
+        }
+
+        if (!prefix) {
+            return this.#listBlobs(containerName, debug);
+        }
+
+        return this.#listFilesWithPrefix(containerName, prefix, debug);
+    }
+
+    /**
+     * [PRIVATE METHOD]
+     * @description lists containers present in the blob storage
+     * @typedef{(debug: boolean) => Promise<Object>}
+     * @param debug - display debug response
+     **/
+    async #listContainers(debug) {
+        let blobService = azure.createBlobService(this.#config.account, this.#config.accountKey, this.#config.url)
+
+        return new Promise((resolve, reject) => {
+            blobService.listContainersSegmented(null, (err, result) => {
+                if (err) {
+                    console.error("Error while listing containers", err);
+                    reject(err);
+                } else {
+                    let data = []
+                    if (debug) {
+                        for (const container of result.entries) {
+                            data.push({
+                                name: container.name,
+                                lastModified: container.lastModified,
+                                etag: container.etag,
+                                leaseStatus: container.lease,
+                                legalHold: container.hasLegalHold,
+                                publicAccessLevel: container.publicAccessLevel,
+                            });
+                        }
+                        console.info("Successfully listed containers");
+                    } else {
+                        for (const container of result.entries) {
+                            data.push({
+                                name: container.name,
+                                lastModified: container.lastModified
+                            });
+                        }
+                    }
+
+                    console.table(data);
+                    resolve(result);
+                }
+            })
+        });
+    }
+
+    /**
+     * [PRIVATE METHOD]
+     * @description lists containers present in the blob storage
+     * @typedef{(containerName: string, debug: boolean) => Promise<Object>}
+     * @param containerName - name of container at the azure blob storage
+     * @param debug - display debug response
+     **/
+    async #listBlobs(containerName, debug) {
+        let blobService = azure.createBlobService(this.#config.account, this.#config.accountKey, this.#config.url)
+
+        return new Promise((resolve, reject) => {
+            blobService.listBlobsSegmented(containerName, null, (err, result) => {
+                if (err) {
+                    console.error(`Error while listing blobs in container ${containerName}`, err);
+                    reject(err);
+                } else {
+                    let folders = new Set()
+
+                    for (const blob of result.entries) {
+                        let folder = blob.name.split("/")[0]
+
+                        if (folder && !folders.has(folder)) {
+                            folders.add(folder)
+                        }
+                    }
+
+                    if (debug) {
+                        console.info(`Successfully listed blobs in container ${containerName}`);
+                    }
+
+                    console.table(folders.keys());
+                    resolve(result);
+                }
+            })
+        })
+    }
+
+    /**
+     * [PRIVATE METHOD]
+     * @description lists containers present in the blob storage
+     * @typedef{(containerName: string, debug: boolean) => Promise<Object>}
+     * @param containerName - name of container at the azure blob storage
+     * @param prefix - prefix associated with blob azure blob storage
+     * @param debug - display debug response
+     **/
+    async #listFilesWithPrefix(containerName, prefix, debug) {
+        let blobService = azure.createBlobService(this.#config.account, this.#config.accountKey, this.#config.url)
+
+        return new Promise((resolve, reject) => {
+            blobService.listBlobsSegmentedWithPrefix(containerName, prefix, null, (err, result) => {
+                if (err) {
+                    console.error(`Error while listing blobs in container ${containerName} with prefix ${prefix}`, err);
+                    reject(err);
+                } else {
+                    let data = []
+
+                    for (const blob of result.entries) {
+                        let blobInfo = blob.name.split("/")
+
+                        if (blobInfo[0] !== prefix) {
+                            continue
+                        }
+
+                        if (debug) {
+                            data.push({
+                                name: blobInfo[1],
+                                creation: blob.creationTime,
+                                lastModified: blob.lastModified,
+                                etag: blob.etag,
+                                contentType: blob.contentSettings.contentType,
+                                contentLength: blob.contentLength,
+                                leaseStatus: blob.lease,
+                                type: blob.blobType
+                            });
+
+                        } else {
+                            data.push({
+                                name: blobInfo[1],
+                                creation: blob.creationTime,
+                                lastModified: blob.lastModified,
+                                contentType: blob.contentSettings.contentType,
+                                contentLength: blob.contentLength,
+                            })
+                        }
+                    }
+
+                    console.info(`Successfully listed blobs in container ${containerName} with prefix ${prefix}`);
+                    console.table(data);
+                    resolve(result);
+                }
+            })
+        })
+    }
 }
 
 module.exports = AzureBlobStorageHandler;

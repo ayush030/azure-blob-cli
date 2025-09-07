@@ -33,9 +33,9 @@ function addBlobStorageCommandOptions(program, azureConfig, fileList, debug=fals
         .option('-o, --output <output>', 'path to store downloaded report(s)')
         .option('-d, --debug <debug>', 'Enable debug response')
         .action(async(options, _) => {
-            if (!options.path) {
+            if (!options.output) {
                 // set download path to present directory
-                options.path = ".";
+                options.output = ".";
             }
 
             if (!options.file) {
@@ -56,6 +56,17 @@ function addBlobStorageCommandOptions(program, azureConfig, fileList, debug=fals
         .option('-d, --debug <debug>', 'Enable debug response')
         .action(async (options, _) => {
             await azureHandler.uploadFileToBlobStorage(options.name, options.file, options.blob, options.debug)
+        })
+
+    // list storage entities
+    program
+        .command('list')
+        .description('Lists all blobs in the container')
+        .option('-n, --name <name>', 'The name of the container')
+        .option('-p, --prefix <prefix>', 'The prefix/folder of the blob')
+        .option('-d, --debug <debug>', 'Enable debug response')
+        .action(async (options, _) => {
+            await azureHandler.listAzureEntities(options.name, options.prefix, options.debug)
         })
 }
 

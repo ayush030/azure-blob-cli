@@ -38,7 +38,7 @@ The CLI utility can support following operations -
 ## Building CLI utility
 
 ### Pre-requisites
-1. one should require nodeJS and npm installed. Refer: https://nodejs.org/en/download for node installation
+1. one should require node.JS and npm installed. Refer: https://nodejs.org/en/download for node installation
 2. additionally, to build from Makefile, you will require `make` installed on your environment
 3. install node modules with `make install`
 
@@ -58,12 +58,16 @@ The CLI utility can support following operations -
     `abc download -n test-container -b may_25` **OR** `abc download --name test-container --blob may_25`
  5. upload file to blob:  
     `abc upload -n test-container -b may_25 -f reports/file.txt` **OR** `abc download --name test-container --blob may_25 --file reports/file.txt`
+ 6. list entities in storage:  
+    - list containers : `abc list`
+    - list blob within container : `abc list -n test-container`  **OR** `abc list --name test-container`
+    - list blob with folder prefix :  `abc list -n test-container -p may_25`  **OR** `abc list --name test-container --prefix may_25`
  
 ## Running the utility with node
-to run the utility directly replace `abs` in above commands with node index.js  
+to run the utility directly replace `abc` in above commands with node index.js  
 example: `node index.js create-container -n test-container` and so on
 
 ## Extras
 1. The CLI has a help options for the commands which can be invoked using `-h` or `--help`
-2. To run CLI in debug mode use `-d` or `--debug true` along with CLI command 
+2. To run CLI in debug mode use `-d` or `--debug`  with `true` parameter along with CLI command 
 
