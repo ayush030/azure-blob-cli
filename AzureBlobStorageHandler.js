@@ -267,8 +267,16 @@ class AzureBlobStorageHandler {
         }
 
         let blobService = azure.createBlobServiceWithSas(this.#config.url, this.#sasToken);
+        let fileName = "";
 
-        blobService.getBlobToLocalFile(containerName, `${blob}/${file}`, `${path}/${file}`,
+        // if we want to download a single file
+        if (blob != null || blob === "") {
+            fileName = `${blob}/${file}`;
+        } else {
+            fileName = file
+        }
+
+        blobService.getBlobToLocalFile(containerName, fileName, `${path}/${file}`,
             (err, resp) => {
                 if (err) {
                     console.error("Error while downloading file " + file , err);
